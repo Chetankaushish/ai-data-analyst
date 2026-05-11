@@ -39,7 +39,7 @@ def generate_ai_insights(df):
 
     response = client.chat.completions.create(
 
-        model="deepseek/deepseek-chat-v3-0324",
+        model="anthropic/claude-3-haiku",
 
         messages=[
             {
