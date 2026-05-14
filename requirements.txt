@@ -1,8 +1,12 @@
 streamlit
 pandas
 plotly
+duckdb
+prophet
 openai
 python-dotenv
+fpdf
+streamlit-option-menu
 openpyxl
 numpy
 httpx
