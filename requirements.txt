@@ -4,9 +4,13 @@ plotly
 duckdb
 prophet
 openai
-python-dotenv
-fpdf
+sqlalchemy
 streamlit-option-menu
+streamlit-autorefresh
+reportlab
 openpyxl
 numpy
 httpx
+python-dotenv
+fpdf
+scikit-learn
