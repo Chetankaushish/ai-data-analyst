@@ -2,148 +2,79 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import duckdb
-from prophet import Prophet
 from openai import OpenAI
-from streamlit_option_menu import option_menu
-from streamlit_autorefresh import st_autorefresh
+from prophet import Prophet
 from sqlalchemy import create_engine
-from reportlab.platypus import (
-    SimpleDocTemplate,
-    Paragraph,
-    Spacer
-)
-from reportlab.lib.styles import getSampleStyleSheet
+from streamlit_option_menu import option_menu
 
-# ================= PAGE CONFIG =================
+# ---------------- PAGE ----------------
 
 st.set_page_config(
     page_title="AI Data Analyst Pro",
     page_icon="📊",
-    layout="wide",
-    initial_sidebar_state="expanded"
+    layout="wide"
 )
 
-# ================= AUTO REFRESH =================
-
-st_autorefresh(
-    interval=10000,
-    key="refresh"
-)
-
-# ================= DATABASE =================
-
-engine = create_engine(
-    "sqlite:///analytics.db"
-)
-
-# ================= OPENROUTER =================
+# ---------------- OPENROUTER ----------------
 
 client = OpenAI(
     api_key=st.secrets["OPENROUTER_API_KEY"],
     base_url="https://openrouter.ai/api/v1"
 )
 
-# ================= CUSTOM CSS =================
+# ---------------- DATABASE ----------------
+
+engine = create_engine(
+    "sqlite:///data.db"
+)
+
+# ---------------- CSS ----------------
 
 st.markdown("""
 <style>
 
-/* Main App */
-
-.stApp {
-    background-color: #0E1117;
-    color: white;
+.stApp{
+    background-color:#0f172a;
+    color:white;
 }
 
-/* Title */
-
-.main-title {
-    font-size: 45px;
-    font-weight: bold;
-    text-align: center;
-    color: #00E5FF;
-    margin-bottom: 5px;
+.main-title{
+    font-size:45px;
+    font-weight:bold;
+    text-align:center;
+    color:#38bdf8;
 }
 
-.sub-title {
-    text-align: center;
-    color: #AAAAAA;
-    margin-bottom: 30px;
+.sub-title{
+    text-align:center;
+    color:#cbd5e1;
+    margin-bottom:30px;
 }
 
-/* Metric Cards */
-
-div[data-testid="metric-container"] {
-    background-color: #1E1E1E;
-    border: 1px solid #333333;
-    padding: 18px;
-    border-radius: 15px;
-    box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+div[data-testid="metric-container"]{
+    background:#111827;
+    border:1px solid #334155;
+    padding:15px;
+    border-radius:15px;
 }
 
-/* Sidebar */
-
-section[data-testid="stSidebar"] {
-    background-color: #111827;
+.stButton>button{
+    background:#2563eb;
+    color:white;
+    border:none;
+    border-radius:10px;
+    padding:10px 20px;
+    font-weight:bold;
 }
 
-/* Buttons */
-
-.stButton>button {
-    background-color: #00BFFF;
-    color: white;
-    border-radius: 10px;
-    border: none;
-    padding: 10px 20px;
-    font-weight: bold;
-}
-
-.stButton>button:hover {
-    background-color: #0099cc;
-}
-
-/* File uploader */
-
-[data-testid="stFileUploader"] {
-    background-color: #1E1E1E;
-    padding: 15px;
-    border-radius: 15px;
-}
-
-/* Dataframe */
-
-[data-testid="stDataFrame"] {
-    border-radius: 15px;
-}
-
-/* Success box */
-
-.stSuccess {
-    border-radius: 12px;
-}
-
-/* Warning box */
-
-.stWarning {
-    border-radius: 12px;
-}
-
-/* Text input */
-
-.stTextInput input {
-    border-radius: 10px;
-}
-
-/* Text area */
-
-.stTextArea textarea {
-    border-radius: 10px;
+section[data-testid="stSidebar"]{
+    background:#111827;
 }
 
 </style>
 """, unsafe_allow_html=True)
 
-# ================= HEADER =================
+# ---------------- TITLE ----------------
 
 st.markdown(
     '<p class="main-title">🚀 AI Data Analyst Pro</p>',
@@ -151,34 +82,29 @@ st.markdown(
 )
 
 st.markdown(
-    '<p class="sub-title">Enterprise AI Analytics Dashboard</p>',
+    '<p class="sub-title">AI Dashboard using OpenRouter + Streamlit</p>',
     unsafe_allow_html=True
 )
 
-# ================= SIDEBAR =================
+# ---------------- SIDEBAR ----------------
 
 with st.sidebar:
 
-    st.markdown("## 📊 AI Analytics")
-
     selected = option_menu(
-
-        menu_title=None,
+        menu_title="Menu",
 
         options=[
             "Dashboard",
             "AI Chat",
             "Forecasting",
-            "SQL Analysis",
-            "SQL Chatbot"
+            "SQL Analysis"
         ],
 
         icons=[
-            "bar-chart-fill",
+            "bar-chart",
             "robot",
-            "graph-up-arrow",
-            "database-fill",
-            "chat-dots-fill"
+            "graph-up",
+            "database"
         ],
 
         default_index=0
@@ -187,49 +113,42 @@ with st.sidebar:
     st.markdown("---")
 
     uploaded_file = st.file_uploader(
-        "📂 Upload CSV or Excel File",
+        "Upload CSV or Excel",
         type=["csv", "xlsx"]
     )
 
-# ================= FUNCTIONS =================
+# ---------------- FUNCTIONS ----------------
 
-# CLEAN DATA
+# Clean Data
 
 def clean_data(df):
 
     df = df.drop_duplicates()
 
-    for column in df.columns:
+    for col in df.columns:
 
-        # Numeric Columns
+        if pd.api.types.is_numeric_dtype(df[col]):
 
-        if pd.api.types.is_numeric_dtype(df[column]):
-
-            df[column] = df[column].fillna(
-                df[column].mean()
+            df[col] = pd.to_numeric(
+                df[col],
+                errors="coerce"
             )
 
-        # Datetime Columns
-
-        elif pd.api.types.is_datetime64_any_dtype(
-            df[column]
-        ):
-
-            df[column] = df[column].fillna(
-                method="ffill"
+            df[col] = df[col].fillna(
+                df[col].mean()
             )
-
-        # Text Columns
 
         else:
 
-            df[column] = df[column].fillna(
+            df[col] = df[col].astype(str)
+
+            df[col] = df[col].fillna(
                 "Unknown"
             )
 
     return df
 
-# AI INSIGHTS
+# AI Insights
 
 def generate_ai_insights(df):
 
@@ -238,15 +157,14 @@ def generate_ai_insights(df):
     ).to_string()
 
     prompt = f"""
-    Analyze this dataset and provide:
+    Analyze this dataset.
 
-    1. Important business insights
-    2. Key trends
+    Give:
+    1. Key insights
+    2. Trends
     3. Recommendations
-    4. Unusual patterns
 
-    Dataset Summary:
-
+    Dataset:
     {summary}
     """
 
@@ -256,37 +174,28 @@ def generate_ai_insights(df):
 
         messages=[
             {
-                "role": "system",
-                "content": "You are an expert AI Data Analyst."
-            },
-            {
-                "role": "user",
-                "content": prompt
+                "role":"user",
+                "content":prompt
             }
         ],
 
-        temperature=0.7,
-        max_tokens=1000
+        temperature=0.7
     )
 
     return response.choices[0].message.content
 
-# CHAT WITH DATA
+# AI Chat
 
 def ask_ai(df, question):
 
-    preview = df.head(20).to_string()
+    data = df.head(20).to_string()
 
     prompt = f"""
-    Dataset Preview:
+    Dataset:
+    {data}
 
-    {preview}
-
-    User Question:
-
+    Question:
     {question}
-
-    Give a professional business answer.
     """
 
     response = client.chat.completions.create(
@@ -295,66 +204,41 @@ def ask_ai(df, question):
 
         messages=[
             {
-                "role": "user",
-                "content": prompt
+                "role":"user",
+                "content":prompt
             }
-        ],
-
-        temperature=0.7,
-        max_tokens=1000
+        ]
     )
 
     return response.choices[0].message.content
 
-# PDF REPORT
-
-def create_pdf_report(text):
-
-    doc = SimpleDocTemplate(
-        "AI_Report.pdf"
-    )
-
-    styles = getSampleStyleSheet()
-
-    story = []
-
-    title = Paragraph(
-        "AI Analytics Report",
-        styles['Title']
-    )
-
-    body = Paragraph(
-        text,
-        styles['BodyText']
-    )
-
-    story.append(title)
-
-    story.append(Spacer(1, 20))
-
-    story.append(body)
-
-    doc.build(story)
-
-# ================= MAIN APP =================
+# ---------------- MAIN ----------------
 
 if uploaded_file:
 
-    # READ FILE
+    # Read File
 
-    if uploaded_file.name.endswith(".csv"):
+    try:
 
-        df = pd.read_csv(uploaded_file)
+        if uploaded_file.name.endswith(".csv"):
 
-    else:
+            df = pd.read_csv(uploaded_file)
 
-        df = pd.read_excel(uploaded_file)
+        else:
 
-    # CLEAN DATA
+            df = pd.read_excel(uploaded_file)
+
+    except Exception as e:
+
+        st.error(e)
+
+        st.stop()
+
+    # Clean Data
 
     df = clean_data(df)
 
-    # SAVE TO DATABASE
+    # Save Database
 
     df.to_sql(
         "uploaded_data",
@@ -363,7 +247,7 @@ if uploaded_file:
         index=False
     )
 
-    # DATA PREVIEW
+    # Preview
 
     st.subheader("📄 Dataset Preview")
 
@@ -372,7 +256,7 @@ if uploaded_file:
         use_container_width=True
     )
 
-    # KPI METRICS
+    # Metrics
 
     st.subheader("📌 Dashboard Metrics")
 
@@ -386,106 +270,93 @@ if uploaded_file:
         include="number"
     )
 
-    total_value = 0
+    total = 0
 
     if not numeric_df.empty:
 
-        total_value = numeric_df.sum().sum()
+        total = numeric_df.sum().sum()
 
-    col1, col2, col3, col4 = st.columns(4)
+    c1, c2, c3, c4 = st.columns(4)
 
-    col1.metric("Rows", rows)
+    c1.metric("Rows", rows)
 
-    col2.metric("Columns", columns)
+    c2.metric("Columns", columns)
 
-    col3.metric("Missing Values", missing)
+    c3.metric("Missing", missing)
 
-    col4.metric(
-        "Numeric Total",
-        f"{total_value:,.0f}"
+    c4.metric(
+        "Total",
+        f"{total:,.0f}"
     )
 
-    # COLUMN TYPES
+    # Columns
 
     numeric_columns = df.select_dtypes(
         include="number"
     ).columns.tolist()
 
-    categorical_columns = df.select_dtypes(
+    text_columns = df.select_dtypes(
         include="object"
     ).columns.tolist()
 
-    # ================= DASHBOARD =================
+    # ---------------- DASHBOARD ----------------
 
     if selected == "Dashboard":
 
-        st.subheader(
-            "📈 Interactive Visualizations"
-        )
+        st.subheader("📊 Charts")
 
-        if numeric_columns and categorical_columns:
+        if numeric_columns and text_columns:
 
-            col1, col2, col3 = st.columns(3)
+            chart_type = st.selectbox(
+                "Chart Type",
+                [
+                    "Bar Chart",
+                    "Line Chart",
+                    "Pie Chart",
+                    "Scatter Plot"
+                ]
+            )
 
-            with col1:
+            x_col = st.selectbox(
+                "Select X Axis",
+                text_columns
+            )
 
-                chart_type = st.selectbox(
-                    "Chart Type",
-                    [
-                        "Bar Chart",
-                        "Line Chart",
-                        "Pie Chart",
-                        "Scatter Plot"
-                    ]
-                )
+            y_col = st.selectbox(
+                "Select Y Axis",
+                numeric_columns
+            )
 
-            with col2:
-
-                x_axis = st.selectbox(
-                    "X Axis",
-                    categorical_columns
-                )
-
-            with col3:
-
-                y_axis = st.selectbox(
-                    "Y Axis",
-                    numeric_columns
-                )
-
-            # BAR CHART
+            # BAR
 
             if chart_type == "Bar Chart":
 
                 fig = px.bar(
                     df,
-                    x=x_axis,
-                    y=y_axis,
-                    template="plotly_dark",
-                    text_auto=True
+                    x=x_col,
+                    y=y_col,
+                    template="plotly_dark"
                 )
 
-            # LINE CHART
+            # LINE
 
             elif chart_type == "Line Chart":
 
                 fig = px.line(
                     df,
-                    x=x_axis,
-                    y=y_axis,
-                    markers=True,
+                    x=x_col,
+                    y=y_col,
                     template="plotly_dark"
                 )
 
-            # PIE CHART
+            # PIE
 
             elif chart_type == "Pie Chart":
 
                 fig = px.pie(
                     df,
-                    names=x_axis,
-                    values=y_axis,
-                    hole=0.5,
+                    names=x_col,
+                    values=y_col,
                     template="plotly_dark"
                 )
 
@@ -495,28 +366,21 @@ if uploaded_file:
 
                 fig = px.scatter(
                     df,
-                    x=x_axis,
-                    y=y_axis,
-                    size=y_axis,
+                    x=x_col,
+                    y=y_col,
                     template="plotly_dark"
                 )
-
-            fig.update_layout(
-                height=550
-            )
 
             st.plotly_chart(
                 fig,
                 use_container_width=True
             )
 
-        # HEATMAP
+        # Heatmap
 
         if len(numeric_columns) >= 2:
 
-            st.subheader(
-                "🔥 Correlation Heatmap"
-            )
+            st.subheader("🔥 Correlation Heatmap")
 
             corr = df[
                 numeric_columns
@@ -525,10 +389,6 @@ if uploaded_file:
             heatmap = px.imshow(
                 corr,
                 text_auto=True,
-                color_continuous_scale="Blues"
-            )
-
-            heatmap.update_layout(
                 template="plotly_dark"
             )
 
@@ -537,162 +397,126 @@ if uploaded_file:
                 use_container_width=True
             )
 
-        # AI INSIGHTS
+        # AI Insights
 
         st.subheader("🤖 AI Insights")
 
-        if st.button(
-            "Generate AI Insights"
-        ):
+        if st.button("Generate Insights"):
 
-            with st.spinner(
-                "Analyzing Dataset..."
-            ):
+            with st.spinner("Analyzing..."):
 
-                insights = generate_ai_insights(
-                    df
-                )
+                insights = generate_ai_insights(df)
 
-                st.success(
-                    "Analysis Complete"
-                )
+                st.success("Done")
 
                 st.write(insights)
 
-                # CREATE PDF
-
-                create_pdf_report(
-                    insights
-                )
-
-                with open(
-                    "AI_Report.pdf",
-                    "rb"
-                ) as file:
-
-                    st.download_button(
-                        label="⬇ Download PDF Report",
-                        data=file,
-                        file_name="AI_Report.pdf",
-                        mime="application/pdf"
-                    )
-
-    # ================= AI CHAT =================
+    # ---------------- AI CHAT ----------------
 
     elif selected == "AI Chat":
 
-        st.subheader(
-            "💬 Chat With Your Data"
-        )
+        st.subheader("💬 Chat with Data")
 
         question = st.text_input(
-            "Ask anything about your dataset"
+            "Ask Question"
         )
 
         if st.button("Ask AI"):
 
             if question:
 
-                with st.spinner(
-                    "AI Thinking..."
-                ):
+                with st.spinner("Thinking..."):
 
                     answer = ask_ai(
                         df,
                         question
                     )
 
-                    st.success(
-                        "Answer Generated"
-                    )
-
                     st.write(answer)
 
-    # ================= FORECASTING =================
+    # ---------------- FORECASTING ----------------
 
     elif selected == "Forecasting":
 
-        st.subheader(
-            "📈 AI Forecasting"
+        st.subheader("📈 Forecasting")
+
+        st.info(
+            "Dataset must contain date column."
         )
 
-        date_columns = df.select_dtypes(
-            include=["datetime64"]
-        ).columns.tolist()
+        try:
 
-        if (
-            date_columns
-            and numeric_columns
-        ):
+            date_columns = df.select_dtypes(
+                include=["datetime64"]
+            ).columns.tolist()
 
-            selected_date = st.selectbox(
-                "Select Date Column",
-                date_columns
-            )
+            if date_columns and numeric_columns:
 
-            selected_target = st.selectbox(
-                "Select Forecast Column",
-                numeric_columns
-            )
+                date_col = st.selectbox(
+                    "Date Column",
+                    date_columns
+                )
 
-            forecast_days = st.slider(
-                "Forecast Days",
-                7,
-                365,
-                30
-            )
+                value_col = st.selectbox(
+                    "Value Column",
+                    numeric_columns
+                )
 
-            forecast_df = df[
-                [
-                    selected_date,
-                    selected_target
+                forecast_days = st.slider(
+                    "Forecast Days",
+                    7,
+                    365,
+                    30
+                )
+
+                forecast_df = df[
+                    [date_col, value_col]
                 ]
-            ]
 
-            forecast_df.columns = [
-                "ds",
-                "y"
-            ]
+                forecast_df.columns = [
+                    "ds",
+                    "y"
+                ]
 
-            model = Prophet()
+                model = Prophet()
 
-            model.fit(
-                forecast_df
-            )
+                model.fit(forecast_df)
 
-            future = model.make_future_dataframe(
-                periods=forecast_days
-            )
+                future = model.make_future_dataframe(
+                    periods=forecast_days
+                )
 
-            forecast = model.predict(
-                future
-            )
+                forecast = model.predict(
+                    future
+                )
 
-            forecast_chart = px.line(
-                forecast,
-                x="ds",
-                y="yhat",
-                template="plotly_dark"
-            )
+                fig = px.line(
+                    forecast,
+                    x="ds",
+                    y="yhat",
+                    template="plotly_dark"
+                )
 
-            st.plotly_chart(
-                forecast_chart,
-                use_container_width=True
-            )
+                st.plotly_chart(
+                    fig,
+                    use_container_width=True
+                )
 
-        else:
+            else:
 
-            st.warning(
-                "Dataset must contain date column."
-            )
+                st.warning(
+                    "No date column found"
+                )
 
-    # ================= SQL ANALYSIS =================
+        except Exception as e:
+
+            st.error(e)
+
+    # ---------------- SQL ANALYSIS ----------------
 
     elif selected == "SQL Analysis":
 
-        st.subheader(
-            "🗄 SQL Query System"
-        )
+        st.subheader("🗄 SQL Query")
 
         sql_query = st.text_area(
             "Write SQL Query",
@@ -711,88 +535,31 @@ if uploaded_file:
 
             except Exception as e:
 
-                st.error(str(e))
+                st.error(e)
 
-    # ================= SQL CHATBOT =================
+    # ---------------- DOWNLOAD ----------------
 
-    elif selected == "SQL Chatbot":
-
-        st.subheader(
-            "🤖 SQL Chatbot"
-        )
-
-        sql_question = st.text_input(
-            "Ask SQL Question"
-        )
-
-        if st.button(
-            "Generate SQL"
-        ):
-
-            sql_prompt = f"""
-            Convert this question into SQL.
-
-            Question:
-            {sql_question}
-
-            Table name is df.
-            """
-
-            response = client.chat.completions.create(
-
-                model="deepseek/deepseek-chat-v3-0324",
-
-                messages=[
-                    {
-                        "role": "user",
-                        "content": sql_prompt
-                    }
-                ]
-            )
-
-            generated_sql = response.choices[
-                0
-            ].message.content
-
-            st.code(generated_sql)
-
-            try:
-
-                result = duckdb.query(
-                    generated_sql
-                ).to_df()
-
-                st.dataframe(result)
-
-            except Exception as e:
-
-                st.error(str(e))
-
-    # DOWNLOAD CSV
-
-    st.subheader(
-        "⬇ Download Cleaned Dataset"
-    )
+    st.subheader("⬇ Download Data")
 
     csv = df.to_csv(
         index=False
     ).encode("utf-8")
 
     st.download_button(
-        label="Download CSV",
-        data=csv,
-        file_name="cleaned_data.csv",
-        mime="text/csv"
+        "Download CSV",
+        csv,
+        "cleaned_data.csv",
+        "text/csv"
     )
 
-# ================= HOME SCREEN =================
+# ---------------- HOME ----------------
 
 else:
 
     st.info(
-        "👈 Upload CSV or Excel file from sidebar."
+        "👈 Upload CSV or Excel file from sidebar"
     )
 
     st.markdown("""
-    ## ✨By Chetan Sharma
+    ## ✨ By Chetan Sharma
     """)
