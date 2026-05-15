@@ -794,16 +794,5 @@ else:
     )
 
     st.markdown("""
-    ## ✨ Features
-
-    - AI Insights
-    - AI Chat with CSV
-    - Forecasting
-    - SQL Analysis
-    - SQL Chatbot
-    - PDF Export
-    - Interactive Charts
-    - Correlation Heatmaps
-    - Power BI Style Dashboard
-    - Real-time Dashboard
+    ## ✨By Chetan Sharma
     """)
