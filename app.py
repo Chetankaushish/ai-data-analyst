@@ -7,6 +7,7 @@ from prophet import Prophet
 from sqlalchemy import create_engine
 from streamlit_option_menu import option_menu
 from components.sidebar import render_sidebar
+from components.metrics import render_metrics
 
 # ---------------- PAGE ----------------
 
@@ -233,36 +234,9 @@ if uploaded_file:
 
     # Metrics
 
-    st.subheader("📌 Dashboard Metrics")
+    from components.metrics import render_metrics
 
-    rows = df.shape[0]
-
-    columns = df.shape[1]
-
-    missing = df.isnull().sum().sum()
-
-    numeric_df = df.select_dtypes(
-        include="number"
-    )
-
-    total = 0
-
-    if not numeric_df.empty:
-
-        total = numeric_df.sum().sum()
-
-    c1, c2, c3, c4 = st.columns(4)
-
-    c1.metric("Rows", rows)
-
-    c2.metric("Columns", columns)
-
-    c3.metric("Missing", missing)
-
-    c4.metric(
-        "Total",
-        f"{total:,.0f}"
-    )
+    render_metrics(df)
 
     # Columns
 
