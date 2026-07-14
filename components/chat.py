@@ -1,7 +1,8 @@
 import streamlit as st
 import pandas as pd
+from utils.chat_memory import ChatMemory
 
-
+memory = ChatMemory()
 def render_chat(df, ask_ai):
 
     st.markdown("## 🤖 AI Data Chat")
@@ -9,9 +10,6 @@ def render_chat(df, ask_ai):
     st.caption("Ask anything about your uploaded dataset.")
 
     # ---------------- Chat Memory ---------------- #
-
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
 
     suggested_questions = [
         "Give me executive summary",
@@ -52,11 +50,7 @@ def render_chat(df, ask_ai):
 
     # ---------------- Show Chat ---------------- #
 
-    for msg in st.session_state.messages:
-
-        with st.chat_message(msg["role"]):
-
-            st.markdown(msg["content"])
+    memory.render()
 
     # ---------------- Chat Input ---------------- #
 
@@ -65,13 +59,8 @@ def render_chat(df, ask_ai):
     )
 
     if prompt:
-
-        st.session_state.messages.append(
-            {
-                "role": "user",
-                "content": prompt
-            }
-        )
+        
+        memory.add_user(prompt)
 
         with st.chat_message("user"):
 
@@ -85,12 +74,7 @@ def render_chat(df, ask_ai):
 
                 st.markdown(answer)
 
-        st.session_state.messages.append(
-            {
-                "role": "assistant",
-                "content": answer
-            }
-        )
+        memory.add_ai(answer)
 
     st.divider()
 
