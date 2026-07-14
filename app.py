@@ -388,6 +388,11 @@ if uploaded_file:
             df,
             ""
             )
+        
+    #----------settings----------
+    elif selected == "Settings":
+        
+        settings = render_settings()
 
     # ---------------- DOWNLOAD ----------------
 
