@@ -259,11 +259,11 @@ if uploaded_file:
     # ---------------- AI CHAT ----------------
 
     elif selected == "AI Chat":
-
-    render_chat(
-        df,
-        ask_ai
-    )
+        render_chat(
+            df,
+            ask_ai
+            )
+        
     # ---------------- FORECASTING ----------------
 
     elif selected == "Forecasting":
