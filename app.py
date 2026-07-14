@@ -6,6 +6,7 @@ from openai import OpenAI
 from prophet import Prophet
 from sqlalchemy import create_engine
 from streamlit_option_menu import option_menu
+from components.sidebar import render_sidebar
 
 # ---------------- PAGE ----------------
 
@@ -88,34 +89,8 @@ st.markdown(
 
 # ---------------- SIDEBAR ----------------
 
-with st.sidebar:
+selected, uploaded_file = render_sidebar()
 
-    selected = option_menu(
-        menu_title="Menu",
-
-        options=[
-            "Dashboard",
-            "AI Chat",
-            "Forecasting",
-            "SQL Analysis"
-        ],
-
-        icons=[
-            "bar-chart",
-            "robot",
-            "graph-up",
-            "database"
-        ],
-
-        default_index=0
-    )
-
-    st.markdown("---")
-
-    uploaded_file = st.file_uploader(
-        "Upload CSV or Excel",
-        type=["csv", "xlsx"]
-    )
 
 # ---------------- FUNCTIONS ----------------
 
