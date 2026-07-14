@@ -11,6 +11,7 @@ from components.metrics import render_metrics
 from components.dashboard import render_dashboard
 from components.chat import render_chat
 from utils.sql_agent import SQLAgent
+from utils.report import ReportGenerator
 
 # ---------------- PAGE ----------------
 
@@ -346,7 +347,7 @@ if uploaded_file:
     # ---------------- SQL ANALYSIS ----------------
 
     agent = SQLAgent(df)
-    
+
     # ---------------- DOWNLOAD ----------------
 
     st.subheader("⬇ Download Data")
@@ -361,6 +362,42 @@ if uploaded_file:
         "cleaned_data.csv",
         "text/csv"
     )
+    
+    st.markdown("---")
+    
+    st.subheader("📄 Generate PDF Report")
+    
+    if st.button("Generate Report"):
+        
+        with st.spinner("Generating report..."):
+            
+            try:
+                
+                insights = ""
+                
+                report = ReportGenerator(
+                    df,
+                    insights
+                )
+                
+                
+                pdf = report.create_pdf()
+                
+                st.download_button(
+                    
+                    "⬇ Download PDF",
+                    
+                    pdf,
+                    
+                    "AI_Report.pdf",
+                    
+                    mime="application/pdf"
+                    
+                    )
+                
+                except Exception as e:
+                
+                st.error(e)
 
 # ---------------- HOME ----------------
 
