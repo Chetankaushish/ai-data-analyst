@@ -10,6 +10,7 @@ from components.sidebar import render_sidebar
 from components.metrics import render_metrics
 from components.dashboard import render_dashboard
 from components.chat import render_chat
+from utils.sql_agent import SQLAgent
 
 # ---------------- PAGE ----------------
 
@@ -344,29 +345,8 @@ if uploaded_file:
 
     # ---------------- SQL ANALYSIS ----------------
 
-    elif selected == "SQL Analysis":
-
-        st.subheader("🗄 SQL Query")
-
-        sql_query = st.text_area(
-            "Write SQL Query",
-            "SELECT * FROM df LIMIT 5"
-        )
-
-        if st.button("Run SQL"):
-
-            try:
-
-                result = duckdb.query(
-                    sql_query
-                ).to_df()
-
-                st.dataframe(result)
-
-            except Exception as e:
-
-                st.error(e)
-
+    agent = SQLAgent(df)
+    
     # ---------------- DOWNLOAD ----------------
 
     st.subheader("⬇ Download Data")
