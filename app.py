@@ -14,6 +14,7 @@ from utils.sql_agent import SQLAgent
 from utils.report import ReportGenerator
 from utils.ai import AIEngine
 from components.report_page import render_report_page
+from components.settings import render_settings
 
 # ---------------- PAGE ----------------
 
