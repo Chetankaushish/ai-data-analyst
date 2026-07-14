@@ -12,6 +12,7 @@ from components.dashboard import render_dashboard
 from components.chat import render_chat
 from utils.sql_agent import SQLAgent
 from utils.report import ReportGenerator
+from utils.ai import AIEngine
 
 # ---------------- PAGE ----------------
 
@@ -26,6 +27,9 @@ st.set_page_config(
 client = OpenAI(
     api_key=st.secrets["OPENROUTER_API_KEY"],
     base_url="https://openrouter.ai/api/v1"
+)
+ai = AIEngine(
+    st.secrets["OPENROUTER_API_KEY"]
 )
 
 # ---------------- DATABASE ----------------
@@ -131,6 +135,8 @@ def clean_data(df):
 # AI Insights
 
 def generate_ai_insights(df):
+    return ai.business_insights(df)
+
 
     summary = df.describe(
         include="all"
@@ -167,6 +173,7 @@ def generate_ai_insights(df):
 # AI Chat
 
 def ask_ai(df, question):
+    return ai.ask(df, question)
 
     data = df.head(20).to_string()
 
