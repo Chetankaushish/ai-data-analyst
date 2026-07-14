@@ -1,0 +1,338 @@
+/* =====================================================
+   AI DATA ANALYST PRO - PREMIUM UI
+   Version: 2.0
+===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+html,
+body,
+[class*="css"]{
+    font-family:'Inter',sans-serif;
+}
+
+/* Background */
+
+.stApp{
+    background:
+        radial-gradient(circle at top left,#1e3a8a 0%,#0f172a 40%),
+        linear-gradient(135deg,#020617,#0f172a,#111827);
+    color:white;
+}
+
+/* Hide Streamlit Branding */
+
+#MainMenu{
+    visibility:hidden;
+}
+
+footer{
+    visibility:hidden;
+}
+
+header{
+    visibility:hidden;
+}
+
+/* Main Container */
+
+.block-container{
+
+    padding-top:2rem;
+    padding-left:2rem;
+    padding-right:2rem;
+    padding-bottom:2rem;
+
+}
+
+/* Sidebar */
+
+section[data-testid="stSidebar"]{
+
+    background:#0b1120;
+
+    border-right:1px solid rgba(255,255,255,.08);
+
+}
+
+section[data-testid="stSidebar"] *{
+
+    color:white;
+
+}
+
+/* Hero */
+
+.hero{
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #7c3aed
+    );
+
+    border-radius:22px;
+
+    padding:40px;
+
+    text-align:center;
+
+    margin-bottom:25px;
+
+    box-shadow:
+        0 10px 40px rgba(37,99,235,.35);
+
+}
+
+.hero h1{
+
+    font-size:44px;
+
+    font-weight:800;
+
+    margin-bottom:8px;
+
+}
+
+.hero p{
+
+    font-size:18px;
+
+    color:#dbeafe;
+
+}
+
+/* KPI */
+
+div[data-testid="metric-container"]{
+
+    background:rgba(255,255,255,.05);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    backdrop-filter:blur(14px);
+
+    border-radius:18px;
+
+    padding:18px;
+
+    transition:.25s;
+
+}
+
+div[data-testid="metric-container"]:hover{
+
+    transform:translateY(-5px);
+
+    border:1px solid #3b82f6;
+
+    box-shadow:
+        0 12px 30px rgba(59,130,246,.25);
+
+}
+
+/* Buttons */
+
+.stButton>button{
+
+    width:100%;
+
+    border-radius:14px;
+
+    border:none;
+
+    color:white;
+
+    font-weight:700;
+
+    padding:12px;
+
+    background:linear-gradient(
+        135deg,
+        #2563eb,
+        #7c3aed
+    );
+
+    transition:.25s;
+
+}
+
+.stButton>button:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:0 8px 20px rgba(37,99,235,.35);
+
+}
+
+/* Inputs */
+
+.stTextInput input{
+
+    border-radius:14px;
+
+    border:1px solid rgba(255,255,255,.12);
+
+    background:#111827;
+
+    color:white;
+
+}
+
+/* Select */
+
+.stSelectbox div{
+
+    border-radius:12px;
+
+}
+
+/* Dataframe */
+
+[data-testid="stDataFrame"]{
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+    border:1px solid rgba(255,255,255,.08);
+
+}
+
+/* Upload */
+
+[data-testid="stFileUploader"]{
+
+    border:2px dashed #3b82f6;
+
+    border-radius:18px;
+
+    background:rgba(255,255,255,.03);
+
+    padding:18px;
+
+}
+
+/* Chat */
+
+.user-chat{
+
+    background:#2563eb;
+
+    padding:14px;
+
+    border-radius:18px;
+
+    margin-bottom:12px;
+
+}
+
+.ai-chat{
+
+    background:#1f2937;
+
+    padding:14px;
+
+    border-radius:18px;
+
+    margin-bottom:12px;
+
+}
+
+/* Cards */
+
+.glass{
+
+    background:rgba(255,255,255,.04);
+
+    border-radius:20px;
+
+    border:1px solid rgba(255,255,255,.08);
+
+    backdrop-filter:blur(18px);
+
+    padding:22px;
+
+}
+
+/* Charts */
+
+.js-plotly-plot{
+
+    border-radius:18px;
+
+    overflow:hidden;
+
+}
+
+/* Scrollbar */
+
+::-webkit-scrollbar{
+
+    width:10px;
+
+}
+
+::-webkit-scrollbar-track{
+
+    background:#111827;
+
+}
+
+::-webkit-scrollbar-thumb{
+
+    background:#3b82f6;
+
+    border-radius:20px;
+
+}
+
+/* Success */
+
+.stSuccess{
+
+    border-radius:14px;
+
+}
+
+/* Warning */
+
+.stWarning{
+
+    border-radius:14px;
+
+}
+
+/* Error */
+
+.stError{
+
+    border-radius:14px;
+
+}
+
+/* Download */
+
+.stDownloadButton>button{
+
+    border-radius:14px;
+
+    background:#059669;
+
+    color:white;
+
+}
+
+/* Footer */
+
+.footer{
+
+    text-align:center;
+
+    color:#94a3b8;
+
+    margin-top:40px;
+
+    font-size:14px;
+
+}
