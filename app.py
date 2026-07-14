@@ -9,6 +9,7 @@ from streamlit_option_menu import option_menu
 from components.sidebar import render_sidebar
 from components.metrics import render_metrics
 from components.dashboard import render_dashboard
+from components.chat import render_chat
 
 # ---------------- PAGE ----------------
 
@@ -254,30 +255,15 @@ if uploaded_file:
     if selected == "Dashboard":
         
         render_dashboard(df)
-        
+
     # ---------------- AI CHAT ----------------
 
     elif selected == "AI Chat":
 
-        st.subheader("💬 Chat with Data")
-
-        question = st.text_input(
-            "Ask Question"
-        )
-
-        if st.button("Ask AI"):
-
-            if question:
-
-                with st.spinner("Thinking..."):
-
-                    answer = ask_ai(
-                        df,
-                        question
-                    )
-
-                    st.write(answer)
-
+    render_chat(
+        df,
+        ask_ai
+    )
     # ---------------- FORECASTING ----------------
 
     elif selected == "Forecasting":
