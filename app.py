@@ -13,6 +13,7 @@ from components.chat import render_chat
 from utils.sql_agent import SQLAgent
 from utils.report import ReportGenerator
 from utils.ai import AIEngine
+from components.report_page import render_report_page
 
 # ---------------- PAGE ----------------
 
@@ -355,31 +356,16 @@ if uploaded_file:
 
     agent = SQLAgent(df)
 
-    # ---------------- DOWNLOAD ----------------
+    #---------------report page----------------
 
-st.subheader("📄 Generate PDF Report")
+    elif selected == "Reports":
 
-if st.button("Generate Report"):
+    render_report_page(
+        df,
+        ""
+    )
 
-    with st.spinner("Generating report..."):
-
-        try:
-
-            insights = ""
-
-            report = ReportGenerator(df, insights)
-
-            pdf = report.create_pdf()
-
-            st.download_button(
-                "⬇ Download PDF",
-                pdf,
-                "AI_Report.pdf",
-                mime="application/pdf"
-            )
-
-        except Exception as e:
-            st.error(e)
+# ---------------- DOWNLOAD ----------------
 
 # ---------------- HOME ----------------
 
