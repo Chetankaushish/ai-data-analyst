@@ -354,18 +354,42 @@ if uploaded_file:
 
     # ---------------- SQL ANALYSIS ----------------
 
-    agent = SQLAgent(df)
+    elif selected == "SQL Analysis":
+        
+        agent = SQLAgent(df)
 
-    #---------------report page----------------
+    st.subheader("🗄 SQL Query")
 
-    elif selected == "Reports":
-
-    render_report_page(
-        df,
-        ""
+    sql_query = st.text_area(
+        "Write SQL Query",
+        "SELECT * FROM dataset LIMIT 5"
     )
 
-# ---------------- DOWNLOAD ----------------
+    if st.button("Run SQL"):
+
+        result = agent.execute(sql_query)
+
+        if result["success"]:
+
+            st.dataframe(
+                result["data"],
+                use_container_width=True
+            )
+
+        else:
+
+            st.error(result["error"])
+
+    #--------------Reoprts-----------------
+    elif selected == "Reports":
+        
+        render_report_page(
+            df,
+            ""
+            )
+
+    # ---------------- DOWNLOAD ----------------
+
 
 # ---------------- HOME ----------------
 
