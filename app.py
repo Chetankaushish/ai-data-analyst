@@ -350,54 +350,29 @@ if uploaded_file:
 
     # ---------------- DOWNLOAD ----------------
 
-    st.subheader("⬇ Download Data")
+st.subheader("📄 Generate PDF Report")
 
-    csv = df.to_csv(
-        index=False
-    ).encode("utf-8")
+if st.button("Generate Report"):
 
-    st.download_button(
-        "Download CSV",
-        csv,
-        "cleaned_data.csv",
-        "text/csv"
-    )
-    
-    st.markdown("---")
-    
-    st.subheader("📄 Generate PDF Report")
-    
-    if st.button("Generate Report"):
-        
-        with st.spinner("Generating report..."):
-            
-            try:
-                
-                insights = ""
-                
-                report = ReportGenerator(
-                    df,
-                    insights
-                )
-                
-                
-                pdf = report.create_pdf()
-                
-                st.download_button(
-                    
-                    "⬇ Download PDF",
-                    
-                    pdf,
-                    
-                    "AI_Report.pdf",
-                    
-                    mime="application/pdf"
-                    
-                    )
-                
-                except Exception as e:
-                
-                st.error(e)
+    with st.spinner("Generating report..."):
+
+        try:
+
+            insights = ""
+
+            report = ReportGenerator(df, insights)
+
+            pdf = report.create_pdf()
+
+            st.download_button(
+                "⬇ Download PDF",
+                pdf,
+                "AI_Report.pdf",
+                mime="application/pdf"
+            )
+
+        except Exception as e:
+            st.error(e)
 
 # ---------------- HOME ----------------
 
