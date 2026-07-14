@@ -8,6 +8,7 @@ from sqlalchemy import create_engine
 from streamlit_option_menu import option_menu
 from components.sidebar import render_sidebar
 from components.metrics import render_metrics
+from components.dashboard import render_dashboard
 
 # ---------------- PAGE ----------------
 
@@ -251,115 +252,9 @@ if uploaded_file:
     # ---------------- DASHBOARD ----------------
 
     if selected == "Dashboard":
-
-        st.subheader("📊 Charts")
-
-        if numeric_columns and text_columns:
-
-            chart_type = st.selectbox(
-                "Chart Type",
-                [
-                    "Bar Chart",
-                    "Line Chart",
-                    "Pie Chart",
-                    "Scatter Plot"
-                ]
-            )
-
-            x_col = st.selectbox(
-                "Select X Axis",
-                text_columns
-            )
-
-            y_col = st.selectbox(
-                "Select Y Axis",
-                numeric_columns
-            )
-
-            # BAR
-
-            if chart_type == "Bar Chart":
-
-                fig = px.bar(
-                    df,
-                    x=x_col,
-                    y=y_col,
-                    template="plotly_dark"
-                )
-
-            # LINE
-
-            elif chart_type == "Line Chart":
-
-                fig = px.line(
-                    df,
-                    x=x_col,
-                    y=y_col,
-                    template="plotly_dark"
-                )
-
-            # PIE
-
-            elif chart_type == "Pie Chart":
-
-                fig = px.pie(
-                    df,
-                    names=x_col,
-                    values=y_col,
-                    template="plotly_dark"
-                )
-
-            # SCATTER
-
-            else:
-
-                fig = px.scatter(
-                    df,
-                    x=x_col,
-                    y=y_col,
-                    template="plotly_dark"
-                )
-
-            st.plotly_chart(
-                fig,
-                use_container_width=True
-            )
-
-        # Heatmap
-
-        if len(numeric_columns) >= 2:
-
-            st.subheader("🔥 Correlation Heatmap")
-
-            corr = df[
-                numeric_columns
-            ].corr()
-
-            heatmap = px.imshow(
-                corr,
-                text_auto=True,
-                template="plotly_dark"
-            )
-
-            st.plotly_chart(
-                heatmap,
-                use_container_width=True
-            )
-
-        # AI Insights
-
-        st.subheader("🤖 AI Insights")
-
-        if st.button("Generate Insights"):
-
-            with st.spinner("Analyzing..."):
-
-                insights = generate_ai_insights(df)
-
-                st.success("Done")
-
-                st.write(insights)
-
+        
+        render_dashboard(df)
+        
     # ---------------- AI CHAT ----------------
 
     elif selected == "AI Chat":
